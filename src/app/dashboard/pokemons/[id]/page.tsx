@@ -16,6 +16,12 @@ import { Metadata } from "next";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
+export async function generateStaticParams() {
+  const staticPokemons = Array.from({ length: 151 }).map((v, i) => `${i + 1}`);
+
+  return staticPokemons.map((id) => ({ id: id }));
+}
+
 export async function generateMetadata(props: {
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
