@@ -1,9 +1,14 @@
+"use client";
+
 import Image from "next/image";
 import { SimplePokemon } from "../interfaces/simple-pokemon";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { IoHeartOutline } from "react-icons/io5";
+import { IoHeart, IoHeartOutline } from "react-icons/io5";
 import Link from "next/link";
+import { useAppDispatch, useAppSelector } from "@/store";
+import { RootState } from "../../store/index";
+import { toggleFavorite } from "@/store/pokemons/pokemonsSlice";
 
 interface PokemonCardProps {
   pokemon: SimplePokemon;
@@ -11,9 +16,11 @@ interface PokemonCardProps {
 
 export const PokemonCard = ({ pokemon }: PokemonCardProps) => {
   const { id, name } = pokemon;
+  const isFavorite = useAppSelector((state: RootState) => !!state.pokemons.favorites[id]);
+  const dispatch = useAppDispatch();
 
   return (
-    <Card className="hover:border-primary transition-all duration-150 ease-linear cursor-pointer">
+    <Card className="hover:border-primary transition-all duration-150 ease-linear">
       <CardContent className="flex flex-col items-center justify-center gap-2">
         <Image
           key={id}
@@ -25,15 +32,28 @@ export const PokemonCard = ({ pokemon }: PokemonCardProps) => {
         />
         <span>{name}</span>
         <Button variant={"outline"} className="w-full">
-          <Link prefetch href={`pokemons/${id}`}>Más Información</Link>
+          <Link prefetch href={`pokemons/${id}`}>
+            Más Información
+          </Link>
         </Button>
       </CardContent>
-      <CardFooter className="flex gap-2 items-center w-full">
-        <IoHeartOutline className="text-red-500" />
-        <div className="flex flex-col items-start justify-center gap-1">
-          <span>No es favorito</span>
-          <small>Nop</small>
-        </div>
+      <CardFooter
+        className="flex gap-2 items-center w-full cursor-pointer"
+        onClick={() => {
+          dispatch(toggleFavorite(pokemon))
+        }}
+      >
+        {isFavorite ? (
+          <>
+            <IoHeart className="text-red-500" />
+            <span>Es favorito</span>
+          </>
+        ) : (
+          <>
+            <IoHeartOutline className="text-red-500" />
+            <span>No es favorito</span>
+          </>
+        )}
       </CardFooter>
     </Card>
   );
